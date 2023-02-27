@@ -1,17 +1,20 @@
 using System;
+using System.Collections.Generic;
 using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-public class ReplaceGameObjectWindow : EditorWindow
+internal sealed class ReplaceGameObjectWindow : EditorWindow
 {
     [SerializeField]
     private VisualTreeAsset m_VisualTreeAsset = default;
-
+    private VisualElement windowRoot;
     private ObjectField replacingObject;
     private ObjectField toBeReplacedObject;
     private Button replaceButton;
+    private HelpBox windowHelpBox;
+    public List<GameObject> toBeReplacedGameobjects;
 
     [MenuItem("Tools/ReplaceGameObjectWindow")]
     public static void ShowWindow()
@@ -23,12 +26,17 @@ public class ReplaceGameObjectWindow : EditorWindow
     public void CreateGUI()
     {
         // Each editor window contains a root VisualElement object
-        VisualElement root = rootVisualElement;
+        windowRoot = rootVisualElement;
 
         // Instantiate UXML
         VisualElement windowVisualTree = m_VisualTreeAsset.Instantiate();
-        root.Add(windowVisualTree);
+        windowRoot.Add(windowVisualTree);
 
+        InitializeWindowControls(windowRoot);
+    }
+
+    private void InitializeWindowControls(VisualElement root)
+    {
         replacingObject = root.Query<ObjectField>("ReplacingObjectField");
         replacingObject.objectType = typeof(GameObject);
 
@@ -37,10 +45,16 @@ public class ReplaceGameObjectWindow : EditorWindow
 
         replaceButton = root.Query<Button>("ReplaceButton");
         replaceButton.clicked += OnReplaceButtonClicked;
+
+        windowHelpBox = root.Query<HelpBox>("HelpBox");
+        windowHelpBox.messageType = HelpBoxMessageType.Error;
+        windowHelpBox.visible = false;
     }
 
     private void OnReplaceButtonClicked()
     {
+        if (windowHelpBox.visible)
+            HideHelpBox();
         var replacingObje = (GameObject) replacingObject.value;
         var tobeReplacedObj = (GameObject) toBeReplacedObject.value;
         Replace(replacingObje, tobeReplacedObj);
@@ -50,8 +64,8 @@ public class ReplaceGameObjectWindow : EditorWindow
     {
         try
         {
-            var newObj = Instantiate(replacingObj);
             var oldObj = tobereplacedObj;
+            var newObj = Instantiate(replacingObj);
             newObj.transform.position = oldObj.transform.position;
             newObj.transform.localScale = oldObj.transform.localScale;
             newObj.transform.rotation = oldObj.transform.rotation;
@@ -61,6 +75,19 @@ public class ReplaceGameObjectWindow : EditorWindow
         catch (Exception e)
         {
             Debug.LogError(e.Message);
+            windowHelpBox.text = e.Message;
+            windowHelpBox.visible = true;
         }
     }
+
+    private void HideHelpBox()
+    {
+        windowHelpBox.visible = false;
+    }
+
+    private void OnSelectionChange()
+    {
+        HideHelpBox();
+    }
 }
+

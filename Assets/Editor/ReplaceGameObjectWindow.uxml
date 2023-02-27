@@ -3,4 +3,5 @@
     <uie:ObjectField name="ReplacingObjectField" label="Replacing Object" />
     <uie:ObjectField name="ObjectToBeReplacedField" label="Object to be replaced" />
     <ui:Button text="Replace" display-tooltip-when-elided="true" name="ReplaceButton" style="-unity-text-align: lower-center;" />
+    <ui:HelpBox name="HelpBox" style="height: 35px; visibility: hidden;" />
 </ui:UXML>
