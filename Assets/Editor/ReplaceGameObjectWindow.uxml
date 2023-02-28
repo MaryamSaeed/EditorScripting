@@ -2,6 +2,8 @@
     <Style src="project://database/Assets/Editor/ReplaceGameObjectWindow.uss?fileID=7433441132597879392&amp;guid=7bd72da37910af042b6fb0ce277d71ef&amp;type=3#ReplaceGameObjectWindow" />
     <uie:ObjectField name="ReplacingObjectField" label="Replacing Object" />
     <uie:ObjectField name="ObjectToBeReplacedField" label="Object to be replaced" />
+    <uie:InspectorElement name="ObjectsListInspector" />
     <ui:Button text="Replace" display-tooltip-when-elided="true" name="ReplaceButton" style="-unity-text-align: lower-center;" />
+    <ui:Button name="ReplaceGameObjectsButton" text="ReplaceObjects" enable-rich-text="true" />
     <ui:HelpBox name="HelpBox" style="height: 35px; visibility: hidden;" />
 </ui:UXML>

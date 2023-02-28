@@ -1,7 +1,0 @@
-<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
-    <Style src="project://database/Assets/Editor/ReplaceGameObjectInspector.uss?fileID=7433441132597879392&amp;guid=981d9a076defb474fb7f0c14b282cddb&amp;type=3#ReplaceGameObjectInspector" />
-    <ui:Label tabindex="-1" text="Replacing object" display-tooltip-when-elided="true" name="ReplacingObjectLabel" />
-    <uie:ObjectField name="ReplacingObjectField" style="flex-direction: row; flex-wrap: nowrap; justify-content: space-around;" />
-    <ui:Label tabindex="-1" text="Object to be replaced" display-tooltip-when-elided="true" name="ObjectToBeReplaced" />
-    <uie:PropertyControl`1[System.Int32] />
-</ui:UXML>
