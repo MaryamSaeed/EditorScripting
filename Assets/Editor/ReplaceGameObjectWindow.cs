@@ -13,6 +13,7 @@ internal sealed class ReplaceGameObjectWindow : EditorWindow
     private VisualElement windowRoot;
     private ObjectField replacingObject;
     private ObjectField toBeReplacedObject;
+    private VisualElement listFieldContainer;
     private Button replaceButton;
     private Button replaceObjectsButton;
     private HelpBox windowHelpBox;
@@ -47,13 +48,9 @@ internal sealed class ReplaceGameObjectWindow : EditorWindow
         replacingObject = root.Query<ObjectField>("ReplacingObjectField");
         replacingObject.objectType = typeof(GameObject);
 
-        toBeReplacedObject = root.Query<ObjectField>("ObjectToBeReplacedField");
-        toBeReplacedObject.objectType = typeof(GameObject);
+        listFieldContainer = root.Query<VisualElement>("ListFieldContainer");
+        DrawListAsScriptableObject(listFieldContainer);
 
-        DrawListViaDefaultInspector();
-
-        replaceButton = root.Query<Button>("ReplaceButton");
-        replaceButton.clicked += OnReplaceButtonClicked;
 
         replaceObjectsButton = root.Query<Button>("ReplaceGameObjectsButton");
         replaceObjectsButton.clicked += OnReplaceObjectsButton;
@@ -61,7 +58,6 @@ internal sealed class ReplaceGameObjectWindow : EditorWindow
         windowHelpBox = root.Query<HelpBox>("HelpBox");
         windowHelpBox.messageType = HelpBoxMessageType.Error;
         windowHelpBox.visible = false;
-
     }
 
     private void OnReplaceObjectsButton()
@@ -76,32 +72,28 @@ internal sealed class ReplaceGameObjectWindow : EditorWindow
         Debug.Log("Objects replaced successfully");
     }
 
-    private void DrawListAsScriptableObject()
+    /// <summary>
+    /// draw via property drawer
+    /// </summary>
+    private void DrawListAsScriptableObject(VisualElement container)
     {
-        ScriptableObject listObject = CreateInstance(typeof(ObjectsList));
+        listObject = CreateInstance(typeof(ObjectsList));
         SerializedObject serializedListObject = new SerializedObject(listObject);
-        SerializedProperty sproperty = serializedListObject.FindProperty("test");
+        SerializedProperty sproperty = serializedListObject.FindProperty("ObjectsToBeReplaced");
         ObjectsListDrawerUIE drawer = new ObjectsListDrawerUIE();
         var visualElement = drawer.CreatePropertyGUI(sproperty);
-        windowRoot.Add(visualElement);
+        container.Add(visualElement);
     }
 
+    /// <summary>
+    /// draw via custome inspector--> this ugly
+    /// </summary>
     private void DrawListViaDefaultInspector()
     {
         listObject = CreateInstance(typeof(ObjectsList));
         serializedListObject = new SerializedObject(listObject);
         listInspector = windowRoot.Query<InspectorElement>("ObjectsListInspector");
         listInspector.Bind(serializedListObject);
-    }
-
-    private void OnReplaceButtonClicked()
-    {
-        if (windowHelpBox.visible)
-            HideHelpBox();
-        var replacingObje = (GameObject) replacingObject.value;
-        var tobeReplacedObj = (GameObject) toBeReplacedObject.value;
-        Replace(replacingObje, tobeReplacedObj);
-        toBeReplacedObject.value = tobeReplacedObj;
     }
 
     private void Replace(GameObject replacingObj, GameObject tobereplacedObj)
@@ -136,25 +128,33 @@ internal sealed class ReplaceGameObjectWindow : EditorWindow
 }
 
 [Serializable]
-public class ObjectsList : ScriptableObject
+internal sealed class ObjectsList : ScriptableObject
 {
     public List<GameObject> ObjectsToBeReplaced;
 }
 
 // IngredientDrawerUIE
 [CustomPropertyDrawer(typeof(ObjectsList))]
-public class ObjectsListDrawerUIE : PropertyDrawer
+internal sealed class ObjectsListDrawerUIE : PropertyDrawer
 {
     public override VisualElement CreatePropertyGUI(SerializedProperty property)
     {
         // Create property container element.
-        var listContainer = new VisualElement();
+        //var listField = new PropertyField(property,"Objects to be replaced");
+        //listField.BindProperty(property);
+        //return listField;
 
-        var listField = new PropertyField(property.FindPropertyRelative("ObjectsToBeReplaced"));
-
-        listContainer.Add(listField);
-
-        return listContainer;
+        var test = new ListView();
+        test.BindProperty(property);
+        test.headerTitle = "Objects to be replaced";
+        test.reorderMode = ListViewReorderMode.Animated;
+        test.showFoldoutHeader = true;
+        test.showAddRemoveFooter = true;
+        test.showBorder = true;
+        test.reorderMode = ListViewReorderMode.Simple;
+        return test;
     }
+
+
 }
 
