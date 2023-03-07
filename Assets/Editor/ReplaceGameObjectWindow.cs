@@ -21,9 +21,6 @@ internal sealed class ReplaceGameObjectWindow : EditorWindow
     private ScriptableObject listObject;
     private SerializedObject serializedListObject;
 
-    [SerializeField]
-    public List<GameObject> toBeReplacedGameobjects;
-
     [MenuItem("Tools/ReplaceGameObjectWindow")]
     public static void ShowWindow()
     {
@@ -50,7 +47,6 @@ internal sealed class ReplaceGameObjectWindow : EditorWindow
 
         listFieldContainer = root.Query<VisualElement>("ListFieldContainer");
         DrawListAsScriptableObject(listFieldContainer);
-
 
         replaceObjectsButton = root.Query<Button>("ReplaceGameObjectsButton");
         replaceObjectsButton.clicked += OnReplaceObjectsButton;
@@ -85,17 +81,6 @@ internal sealed class ReplaceGameObjectWindow : EditorWindow
         container.Add(visualElement);
     }
 
-    /// <summary>
-    /// draw via custome inspector--> this ugly
-    /// </summary>
-    private void DrawListViaDefaultInspector()
-    {
-        listObject = CreateInstance(typeof(ObjectsList));
-        serializedListObject = new SerializedObject(listObject);
-        listInspector = windowRoot.Query<InspectorElement>("ObjectsListInspector");
-        listInspector.Bind(serializedListObject);
-    }
-
     private void Replace(GameObject replacingObj, GameObject tobereplacedObj)
     {
         try
@@ -105,7 +90,6 @@ internal sealed class ReplaceGameObjectWindow : EditorWindow
             newObj.transform.position = oldObj.transform.position;
             newObj.transform.localScale = oldObj.transform.localScale;
             newObj.transform.rotation = oldObj.transform.rotation;
-            //toBeReplacedObject.value = newObj;
             DestroyImmediate(oldObj);
         }
         catch (Exception e)
@@ -151,10 +135,7 @@ internal sealed class ObjectsListDrawerUIE : PropertyDrawer
         test.showFoldoutHeader = true;
         test.showAddRemoveFooter = true;
         test.showBorder = true;
-        test.reorderMode = ListViewReorderMode.Simple;
         return test;
     }
-
-
 }
 
