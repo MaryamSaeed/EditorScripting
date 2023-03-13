@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine;
@@ -12,14 +11,11 @@ internal sealed class ReplaceGameObjectWindow : EditorWindow
     private VisualTreeAsset m_VisualTreeAsset = default;
     private VisualElement windowRoot;
     private ObjectField replacingObject;
-    private ObjectField toBeReplacedObject;
     private VisualElement listFieldContainer;
-    private Button replaceButton;
     private Button replaceObjectsButton;
     private HelpBox windowHelpBox;
-    private InspectorElement listInspector;
     private ScriptableObject listObject;
-    private SerializedObject serializedListObject;
+    private string oldVersionWarning = "Upgrade to unity 2022.2 or newer to be able to drop multiple objects on the list, in this version list object should be assigned one by one.";
 
     [MenuItem("Tools/ReplaceGameObjectWindow")]
     public static void ShowWindow()
@@ -30,10 +26,7 @@ internal sealed class ReplaceGameObjectWindow : EditorWindow
 
     public void CreateGUI()
     {
-        // Each editor window contains a root VisualElement object
         windowRoot = rootVisualElement;
-
-        // Instantiate UXML
         VisualElement windowVisualTree = m_VisualTreeAsset.Instantiate();
         windowRoot.Add(windowVisualTree);
 
@@ -46,7 +39,7 @@ internal sealed class ReplaceGameObjectWindow : EditorWindow
         replacingObject.objectType = typeof(GameObject);
 
         listFieldContainer = root.Query<VisualElement>("ListFieldContainer");
-        DrawListAsScriptableObject(listFieldContainer);
+        DrawListViaPropertyDrawer(listFieldContainer);
 
         replaceObjectsButton = root.Query<Button>("ReplaceGameObjectsButton");
         replaceObjectsButton.clicked += OnReplaceObjectsButton;
@@ -54,6 +47,17 @@ internal sealed class ReplaceGameObjectWindow : EditorWindow
         windowHelpBox = root.Query<HelpBox>("HelpBox");
         windowHelpBox.messageType = HelpBoxMessageType.Error;
         windowHelpBox.visible = false;
+
+#if !UNITY_2022_2_OR_NEWER
+        ShowOldVersionWarning();
+#endif
+    }
+
+    private void ShowOldVersionWarning()
+    {
+        HelpBox WarningBox = new HelpBox(oldVersionWarning, HelpBoxMessageType.Warning);
+        WarningBox.visible = true;
+        windowRoot.Add(WarningBox);
     }
 
     private void OnReplaceObjectsButton()
@@ -68,10 +72,7 @@ internal sealed class ReplaceGameObjectWindow : EditorWindow
         Debug.Log("Objects replaced successfully");
     }
 
-    /// <summary>
-    /// draw via property drawer
-    /// </summary>
-    private void DrawListAsScriptableObject(VisualElement container)
+    private void DrawListViaPropertyDrawer(VisualElement container)
     {
         listObject = CreateInstance(typeof(ObjectsList));
         SerializedObject serializedListObject = new SerializedObject(listObject);
@@ -108,34 +109,6 @@ internal sealed class ReplaceGameObjectWindow : EditorWindow
     private void OnSelectionChange()
     {
         HideHelpBox();
-    }
-}
-
-[Serializable]
-internal sealed class ObjectsList : ScriptableObject
-{
-    public List<GameObject> ObjectsToBeReplaced;
-}
-
-// IngredientDrawerUIE
-[CustomPropertyDrawer(typeof(ObjectsList))]
-internal sealed class ObjectsListDrawerUIE : PropertyDrawer
-{
-    public override VisualElement CreatePropertyGUI(SerializedProperty property)
-    {
-        // Create property container element.
-        //var listField = new PropertyField(property,"Objects to be replaced");
-        //listField.BindProperty(property);
-        //return listField;
-
-        var test = new ListView();
-        test.BindProperty(property);
-        test.headerTitle = "Objects to be replaced";
-        test.reorderMode = ListViewReorderMode.Animated;
-        test.showFoldoutHeader = true;
-        test.showAddRemoveFooter = true;
-        test.showBorder = true;
-        return test;
     }
 }
 

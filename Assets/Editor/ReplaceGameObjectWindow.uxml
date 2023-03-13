@@ -1,8 +1,7 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
     <Style src="project://database/Assets/Editor/ReplaceGameObjectWindow.uss?fileID=7433441132597879392&amp;guid=7bd72da37910af042b6fb0ce277d71ef&amp;type=3#ReplaceGameObjectWindow" />
-    <uie:ObjectField name="ReplacingObjectField" label="Replacing Object" />
-    <ui:VisualElement name="ListFieldContainer" usage-hints="DynamicTransform" focusable="true" />
-    <uie:InspectorElement name="ObjectsListInspector" focusable="true" />
-    <ui:Button name="ReplaceGameObjectsButton" text="ReplaceObjects" enable-rich-text="true" />
+    <uie:ObjectField name="ReplacingObjectField" label="Replacing Object" tooltip="The replacing prefab/gameobject" />
+    <ui:VisualElement name="ListFieldContainer" usage-hints="DynamicTransform" focusable="true" tooltip="Object(s) to be replaced" />
+    <ui:Button name="ReplaceGameObjectsButton" text="ReplaceObjects" enable-rich-text="true" tooltip="Replace objects with replacing prefab/gameobject" />
     <ui:HelpBox name="HelpBox" style="height: 35px; visibility: hidden;" />
 </ui:UXML>
