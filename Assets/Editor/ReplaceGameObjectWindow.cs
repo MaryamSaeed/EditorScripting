@@ -8,7 +8,7 @@ using UnityEngine.UIElements;
 internal sealed class ReplaceGameObjectWindow : EditorWindow
 {
     [SerializeField]
-    private VisualTreeAsset m_VisualTreeAsset = default;
+    private VisualTreeAsset visualTreeAsset = default;
     private VisualElement windowRoot;
     private ObjectField replacingObject;
     private VisualElement listFieldContainer;
@@ -27,7 +27,7 @@ internal sealed class ReplaceGameObjectWindow : EditorWindow
     public void CreateGUI()
     {
         windowRoot = rootVisualElement;
-        VisualElement windowVisualTree = m_VisualTreeAsset.Instantiate();
+        VisualElement windowVisualTree = visualTreeAsset.Instantiate();
         windowRoot.Add(windowVisualTree);
 
         InitializeWindowControls(windowRoot);
