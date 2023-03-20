@@ -9,7 +9,7 @@ using UnityEngine.UIElements;
 internal sealed class ReplaceGameObjectWindow : EditorWindow
 {
     [SerializeField]
-    private VisualTreeAsset visualTreeAsset = default;
+    private VisualTreeAsset m_VisualTreeAsset = default;
     private VisualElement windowRoot;
     private ObjectField replacingObject;
     private VisualElement listFieldContainer;
@@ -17,7 +17,7 @@ internal sealed class ReplaceGameObjectWindow : EditorWindow
     private HelpBox windowHelpBox;
     private ScriptableObject listObject;
     private string oldVersionWarning = "Upgrade to unity 2022.2 or newer to be able to drop multiple objects on the list, in this version list object should be assigned one by one.";
-    private List<GameObject> test;
+ 
     [MenuItem("Tools/ReplaceGameObjectWindow")]
     public static void ShowWindow()
     {
@@ -28,7 +28,7 @@ internal sealed class ReplaceGameObjectWindow : EditorWindow
     public void CreateGUI()
     {
         windowRoot = rootVisualElement;
-        VisualElement windowVisualTree = visualTreeAsset.Instantiate();
+        VisualElement windowVisualTree = m_VisualTreeAsset.Instantiate();
         windowRoot.Add(windowVisualTree);
 
         InitializeWindowControls(windowRoot);
@@ -40,7 +40,7 @@ internal sealed class ReplaceGameObjectWindow : EditorWindow
         replacingObject.objectType = typeof(GameObject);
 
         listFieldContainer = root.Query<VisualElement>("ListFieldContainer");
-        //DrawListViaPropertyDrawer(listFieldContainer);
+        DrawListViaPropertyDrawer(listFieldContainer);
 
         replaceObjectsButton = root.Query<Button>("ReplaceGameObjectsButton");
         replaceObjectsButton.clicked += OnReplaceObjectsButton;
