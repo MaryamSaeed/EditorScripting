@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using SFB;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -64,12 +66,13 @@ public class AssetImporterWindow : EditorWindow
     }
     private void OnSelectAssetsButtonClicked()
     {
-        var directory = Directory.GetCurrentDirectory();
-        var path = EditorUtility.OpenFilePanel("Select asset", directory,"*.fbx");
+        projectDirectory = Directory.GetCurrentDirectory();
 
-        if (!string.IsNullOrEmpty(path))
+        var paths = StandaloneFileBrowser.OpenFilePanel("Open File","", "fbx", true);
+
+        if (paths.Length > 0)
         {
-            fileList.Add(path);
+            fileList.AddRange(paths.ToList());
             selectedAssetsList.Rebuild();
             selectedAssetsList.visible = true;
             importButton.visible = true;
@@ -78,14 +81,31 @@ public class AssetImporterWindow : EditorWindow
 
     private void OnImportButtonClicked()
     {
-        modelsAssetFolder = AssetDatabase.CreateFolder(assetsFolder, modelsFolder);
+        var modlesFolderPath = Path.Combine(projectDirectory, assetsFolder, modelsFolder);
 
-        foreach (var path in fileList)
+        try
         {
-            var filename = Path.GetFileName(path);
-            var modlesFolder = Path.Combine(projectDirectory, assetsFolder, modelsFolder,filename);
-            File.Copy(path, modlesFolder,true);
-            AssetDatabase.Refresh(ImportAssetOptions.Default);
+            if (!Directory.Exists(modlesFolderPath))
+                AssetDatabase.CreateFolder(assetsFolder, modelsFolder);
+
+            foreach (var path in fileList)
+            {
+                var filename = Path.GetFileName(path);
+                var destinationFolder = Path.Combine(projectDirectory, assetsFolder, modelsFolder,filename);
+                File.Copy(path, destinationFolder, true);
+                AssetDatabase.Refresh(ImportAssetOptions.Default);
+            }
         }
+        catch (Exception e)
+        {
+            Debug.LogError("Faild to import model");
+            Debug.LogError(e.Message);
+        }
+
+        Debug.Log("Model imported successfully");
+        fileList.Clear();
+        selectedAssetsList.Rebuild();
+        selectedAssetsList.visible = false;
+        importButton.visible = false;
     }
 }
