@@ -16,10 +16,15 @@ public class AssetImporterWindow : EditorWindow
     private ListView selectedAssetsList;
     private Button importButton;
     private List<string> fileList;
-    private string projectDirectory;
+
     private const string assetsFolder = "Assets";
     private const string modelsFolder = "Models";
+    private const string materialsFolder = "Materials";
+    private const string texturesFolder = "Textures";
 
+    private string projectDirectory;
+    private string materialsFolderPath;
+    private string texturesFolderPath;
 
     [MenuItem("Tools/AssetImporterWindow")]
     public static void ShowExample()
@@ -39,6 +44,7 @@ public class AssetImporterWindow : EditorWindow
 
         InitWindowButtons();
         InitWindowList();
+        InitializeFolders();
     }
 
     private void InitWindowButtons()
@@ -64,9 +70,23 @@ public class AssetImporterWindow : EditorWindow
         selectedAssetsList.style.flexGrow = 1;
         selectedAssetsList.visible = false;
     }
+
+    private void InitializeFolders()
+    {
+        if (string.IsNullOrEmpty(projectDirectory))
+            projectDirectory = Directory.GetCurrentDirectory();
+        var modlesFolderPath = Path.Combine(projectDirectory, assetsFolder, modelsFolder);
+        if (!Directory.Exists(modlesFolderPath))
+            AssetDatabase.CreateFolder(assetsFolder, modelsFolder);
+        materialsFolderPath = Path.Combine(projectDirectory, assetsFolder, materialsFolder);
+        if (!Directory.Exists(materialsFolderPath))
+            AssetDatabase.CreateFolder(assetsFolder, materialsFolder);
+        texturesFolderPath = Path.Combine(projectDirectory, assetsFolder, texturesFolder);
+        if (!Directory.Exists(texturesFolderPath))
+            AssetDatabase.CreateFolder(assetsFolder, texturesFolder);
+    }
     private void OnSelectAssetsButtonClicked()
     {
-        projectDirectory = Directory.GetCurrentDirectory();
 
         var paths = StandaloneFileBrowser.OpenFilePanel("Open File","", "fbx", true);
 
@@ -81,20 +101,25 @@ public class AssetImporterWindow : EditorWindow
 
     private void OnImportButtonClicked()
     {
-        var modlesFolderPath = Path.Combine(projectDirectory, assetsFolder, modelsFolder);
-
         try
         {
-            if (!Directory.Exists(modlesFolderPath))
-                AssetDatabase.CreateFolder(assetsFolder, modelsFolder);
-
             foreach (var path in fileList)
             {
                 var filename = Path.GetFileName(path);
                 var destinationFolder = Path.Combine(projectDirectory, assetsFolder, modelsFolder,filename);
                 File.Copy(path, destinationFolder, true);
                 AssetDatabase.Refresh(ImportAssetOptions.Default);
+
+                //extract materials 
+
+
+                //extract textures 
+                var modelImporter = AssetImporter.GetAtPath(destinationFolder) as ModelImporter;
+                modelImporter.ExtractTextures(texturesFolderPath);
+                modelImporter.SaveAndReimport();
             }
+
+            Debug.Log("Model imported successfully");
         }
         catch (Exception e)
         {
@@ -102,7 +127,6 @@ public class AssetImporterWindow : EditorWindow
             Debug.LogError(e.Message);
         }
 
-        Debug.Log("Model imported successfully");
         fileList.Clear();
         selectedAssetsList.Rebuild();
         selectedAssetsList.visible = false;
