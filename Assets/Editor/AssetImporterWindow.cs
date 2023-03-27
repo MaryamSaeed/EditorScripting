@@ -17,10 +17,10 @@ public class AssetImporterWindow : EditorWindow
     private Button importButton;
     private List<string> fileList;
 
-    private const string assetsFolder = "Assets";
-    private const string modelsFolder = "Models";
-    private const string materialsFolder = "Materials";
-    private const string texturesFolder = "Textures";
+    private readonly string assetsFolder = "Assets";
+    private readonly string modelsFolder = "Models";
+    private readonly string materialsFolder = "Materials";
+    private readonly string texturesFolder = "Textures";
 
     private string projectDirectory;
     private string materialsFolderPath;
@@ -42,9 +42,9 @@ public class AssetImporterWindow : EditorWindow
         VisualElement visualtree = m_VisualTreeAsset.Instantiate();
         windowRoot.Add(visualtree);
 
+        InitializeFolders();
         InitWindowButtons();
         InitWindowList();
-        InitializeFolders();
     }
 
     private void InitWindowButtons()
@@ -64,6 +64,7 @@ public class AssetImporterWindow : EditorWindow
         Action<VisualElement, int> bindItem = (e, i) => (e as Label).text = Path.GetFileName(fileList[i]);
         selectedAssetsList = windowRoot.Query<ListView>("SelectedAssetsList");
         selectedAssetsList.itemsSource = fileList;
+        selectedAssetsList.showAddRemoveFooter = true;
         selectedAssetsList.makeItem = makeItem;
         selectedAssetsList.bindItem = bindItem;
         selectedAssetsList.fixedItemHeight = 20;
@@ -110,17 +111,9 @@ public class AssetImporterWindow : EditorWindow
                 File.Copy(path, destinationFolder, true);
                 AssetDatabase.Refresh(ImportAssetOptions.Default);
 
-                //extract materials 
 
-
-                //extract textures 
-                var modelImporter = AssetImporter.GetAtPath(destinationFolder) as ModelImporter;
-                modelImporter.ExtractTextures(texturesFolderPath);
-                modelImporter.SaveAndReimport();
             }
-
-            Debug.Log("Model imported successfully");
-        }
+       }
         catch (Exception e)
         {
             Debug.LogError("Faild to import model");
