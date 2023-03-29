@@ -7,13 +7,12 @@ using UnityEngine;
 
 internal sealed class FbxProcessor : AssetPostprocessor
 {
+    public static bool processModel = false;
+
     private static readonly string assetsFolder = "Assets";
     private static readonly string materialsFolder = "Materials";
     private static readonly string texturesFolder = "Textures";
-
-    private string materialsPath;
-
-    private ModelImporter modelImporter;
+    private static ModelImporter modelImporter;
 
     private void OnPreprocessModel()
     {
@@ -26,14 +25,29 @@ internal sealed class FbxProcessor : AssetPostprocessor
                                                string[] movedFromAssetPaths,
                                                bool didDomainReload)
     {
-        string materialsPath = Path.Combine(assetsFolder, materialsFolder);
-        string texturesPath = Path.Combine(assetsFolder, texturesFolder);
-
-        foreach (var asset in importedAssets)
+        if (processModel)
         {
-            ExtractMaterialsFromAsset(asset, materialsPath);
+            if (importedAssets.Length > 0)
+            {
+                var materialsPath = Path.Combine(assetsFolder, materialsFolder);
+                var texturesPath = Path.Combine(assetsFolder, texturesFolder);
 
-            //var textures = Array.FindAll(subAssets, x => x.GetType() == typeof(Texture));
+                foreach (var asset in importedAssets)
+                {
+                    var success = modelImporter.ExtractTextures(asset);
+                    if (!success)
+                    {
+                        Debug.Log("failed to extract textures");
+                    }
+                    else
+                    {
+                        Debug.Log("textures extracted successfully");
+                    }
+
+                    ExtractMaterialsFromAsset(asset, materialsPath);
+                }
+            }
+            processModel = false;
         }
     }
 
@@ -58,5 +72,4 @@ internal sealed class FbxProcessor : AssetPostprocessor
             }
         }
     }
-
 }

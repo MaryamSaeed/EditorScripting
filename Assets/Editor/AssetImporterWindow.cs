@@ -104,6 +104,8 @@ public class AssetImporterWindow : EditorWindow
     {
         try
         {
+            FbxProcessor.processModel = true;
+
             foreach (var path in fileList)
             {
                 var filename = Path.GetFileName(path);
