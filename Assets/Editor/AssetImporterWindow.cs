@@ -108,8 +108,6 @@ public class AssetImporterWindow : EditorWindow
                 var destinationFolder = Path.Combine(projectDirectory, assetsFolder, modelsFolder,filename);
                 File.Copy(path, destinationFolder, true);
                 AssetDatabase.Refresh(ImportAssetOptions.Default);
-
-
             }
        }
         catch (Exception e)

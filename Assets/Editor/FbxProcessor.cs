@@ -12,12 +12,6 @@ internal sealed class FbxProcessor : AssetPostprocessor
     private static readonly string assetsFolder = "Assets";
     private static readonly string materialsFolder = "Materials";
     private static readonly string texturesFolder = "Textures";
-    private static ModelImporter modelImporter;
-
-    private void OnPreprocessModel()
-    {
-        modelImporter = assetImporter as ModelImporter;
-    }
 
     private static void OnPostprocessAllAssets(string[] importedAssets,
                                                string[] deletedAssets,
@@ -34,15 +28,15 @@ internal sealed class FbxProcessor : AssetPostprocessor
 
                 foreach (var asset in importedAssets)
                 {
-                    var success = modelImporter.ExtractTextures(asset);
-                    Debug.Log(asset);
-                    if (!success)
+                    var assetTextures = AssetImporter.GetAtPath(asset) as ModelImporter;
+                    var sucess = assetTextures.ExtractTextures(texturesPath);
+                    if (sucess)
                     {
-                        Debug.Log("failed to extract textures");
+                        Debug.Log("textures extracted successfully");
                     }
                     else
                     {
-                        Debug.Log("textures extracted successfully");
+                        Debug.Log("failed to extract textures");
                     }
 
                     ExtractMaterialsFromAsset(asset, materialsPath);
