@@ -35,6 +35,7 @@ internal sealed class FbxProcessor : AssetPostprocessor
                 foreach (var asset in importedAssets)
                 {
                     var success = modelImporter.ExtractTextures(asset);
+                    Debug.Log(asset);
                     if (!success)
                     {
                         Debug.Log("failed to extract textures");
@@ -72,4 +73,5 @@ internal sealed class FbxProcessor : AssetPostprocessor
             }
         }
     }
+
 }

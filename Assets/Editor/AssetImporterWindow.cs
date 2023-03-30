@@ -56,7 +56,6 @@ public class AssetImporterWindow : EditorWindow
         importButton.clicked += OnImportButtonClicked;
         importButton.visible = false;
     }
-
     private void InitWindowList()
     {
         fileList = new List<string>();
@@ -71,7 +70,6 @@ public class AssetImporterWindow : EditorWindow
         selectedAssetsList.style.flexGrow = 1;
         selectedAssetsList.visible = false;
     }
-
     private void InitializeFolders()
     {
         if (string.IsNullOrEmpty(projectDirectory))
@@ -88,7 +86,6 @@ public class AssetImporterWindow : EditorWindow
     }
     private void OnSelectAssetsButtonClicked()
     {
-
         var paths = StandaloneFileBrowser.OpenFilePanel("Open File","", "fbx", true);
 
         if (paths.Length > 0)
@@ -99,7 +96,6 @@ public class AssetImporterWindow : EditorWindow
             importButton.visible = true;
         }
     }
-
     private void OnImportButtonClicked()
     {
         try
