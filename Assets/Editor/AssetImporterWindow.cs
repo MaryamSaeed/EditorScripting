@@ -16,6 +16,7 @@ public class AssetImporterWindow : EditorWindow
     private ListView selectedAssetsList;
     private Button importButton;
     private List<string> fileList;
+    private RadioButtonGroup importOptionsRadioGroup;
 
     private readonly string assetsFolder = "Assets";
     private readonly string modelsFolder = "Models";
@@ -42,11 +43,19 @@ public class AssetImporterWindow : EditorWindow
         VisualElement visualtree = m_VisualTreeAsset.Instantiate();
         windowRoot.Add(visualtree);
 
+        InitRadioButtonGroup();
         InitializeFolders();
         InitWindowButtons();
         InitWindowList();
     }
 
+    private void InitRadioButtonGroup()
+    {
+        importOptionsRadioGroup = windowRoot.Query<RadioButtonGroup>("ImportOptions");
+        importOptionsRadioGroup.choices = new List<string>() { "Import from desk", "Import from link" };
+        importOptionsRadioGroup.SetValueWithoutNotify(0);
+        importOptionsRadioGroup.RegisterValueChangedCallback(evt => OnRadiobuttonvalueChanges(evt.newValue));
+    }
     private void InitWindowButtons()
     {
         selectAssetsButton = windowRoot.Query<Button>("SelectAssetsFromDeskButton");
@@ -109,7 +118,7 @@ public class AssetImporterWindow : EditorWindow
                 File.Copy(path, destinationFolder, true);
                 AssetDatabase.Refresh(ImportAssetOptions.Default);
             }
-       }
+        }
         catch (Exception e)
         {
             Debug.LogError("Faild to import model");
@@ -120,5 +129,17 @@ public class AssetImporterWindow : EditorWindow
         selectedAssetsList.Rebuild();
         selectedAssetsList.visible = false;
         importButton.visible = false;
+    }
+    private void OnRadiobuttonvalueChanges(int value)
+    {
+        if (value == 0)
+        {
+            selectAssetsButton.visible = true;
+        }
+        else
+        {
+            selectAssetsButton.visible = false;
+        }
+
     }
 }

@@ -1,7 +1,8 @@
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
-using System.Net.Http;
+using System;
+using System.Threading.Tasks;
 
 internal sealed class APITest : EditorWindow
 {
@@ -34,7 +35,9 @@ internal sealed class APITest : EditorWindow
 
     public async void OnSendRequestButtonCLick()
     {
+        EditorUtility.DisplayProgressBar("downloading model", "downloading model from server", 0);
         await ModelDownloadHandler.GetModel(apiUrlTextField.text);
+        EditorUtility.DisplayProgressBar("downloading model", "downloading model from server",1);
+        EditorUtility.ClearProgressBar();
     }
-
 }
