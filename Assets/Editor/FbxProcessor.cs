@@ -29,8 +29,8 @@ internal sealed class FbxProcessor : AssetPostprocessor
                 foreach (var asset in importedAssets)
                 {
                     var assetTextures = AssetImporter.GetAtPath(asset) as ModelImporter;
-                    var sucess = assetTextures.ExtractTextures(texturesPath);
-                    if (sucess)
+                    var success  = assetTextures.ExtractTextures(texturesPath);
+                    if (success )
                     {
                         Debug.Log("textures extracted successfully");
                     }
@@ -42,8 +42,8 @@ internal sealed class FbxProcessor : AssetPostprocessor
                     ExtractMaterialsFromAsset(asset, materialsPath);
                 }
             }
-            processModel = false;
         }
+        processModel = false;
     }
 
     private static void ExtractMaterialsFromAsset(string asset, string materialsPath)
