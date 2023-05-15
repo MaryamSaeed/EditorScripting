@@ -17,6 +17,7 @@ public class AssetImporterWindow : EditorWindow
     private Button importButton;
     private List<string> fileList;
     private RadioButtonGroup importOptionsRadioGroup;
+    private TextField assetLink;
 
     private readonly string assetsFolder = "Assets";
     private readonly string modelsFolder = "Models";
@@ -42,11 +43,11 @@ public class AssetImporterWindow : EditorWindow
         // Instantiate UXML
         VisualElement visualtree = m_VisualTreeAsset.Instantiate();
         windowRoot.Add(visualtree);
-
-        InitRadioButtonGroup();
-        InitializeFolders();
         InitWindowButtons();
         InitWindowList();
+        InitWindowTextField();
+        InitRadioButtonGroup();
+        InitializeFolders();
     }
 
     private void InitRadioButtonGroup()
@@ -79,6 +80,12 @@ public class AssetImporterWindow : EditorWindow
         selectedAssetsList.style.flexGrow = 1;
         selectedAssetsList.visible = false;
     }
+    private void InitWindowTextField()
+    {
+        assetLink = windowRoot.Query<TextField>("AssetLink");
+        assetLink.visible = false;
+        assetLink.RegisterValueChangedCallback(evt => { Debug.Log(IsValidURL(evt.newValue)); });
+    }
     private void InitializeFolders()
     {
         if (string.IsNullOrEmpty(projectDirectory))
@@ -101,22 +108,36 @@ public class AssetImporterWindow : EditorWindow
         {
             fileList.AddRange(paths.ToList());
             selectedAssetsList.Rebuild();
+            importOptionsRadioGroup.SetEnabled(false);
             selectedAssetsList.visible = true;
             importButton.visible = true;
         }
     }
-    private void OnImportButtonClicked()
+    private async void OnImportButtonClicked()
     {
         try
         {
-            FbxProcessor.processModel = true;
-
-            foreach (var path in fileList)
+            if (importOptionsRadioGroup.value == 0)
             {
-                var filename = Path.GetFileName(path);
-                var destinationFolder = Path.Combine(projectDirectory, assetsFolder, modelsFolder,filename);
-                File.Copy(path, destinationFolder, true);
-                AssetDatabase.Refresh(ImportAssetOptions.Default);
+                if (fileList.Count > 0)
+                    FbxProcessor.processModel = true;
+
+                foreach (var path in fileList)
+                {
+                    var filename = Path.GetFileName(path);
+                    var destinationFolder = Path.Combine(projectDirectory, assetsFolder, modelsFolder,filename);
+                    File.Copy(path, destinationFolder, true);
+                    AssetDatabase.Refresh(ImportAssetOptions.Default);
+                }
+            }
+            else
+            {
+                Debug.Log("here we go");
+                if (!string.IsNullOrEmpty(assetLink.value))
+                    FbxProcessor.processModel = true;
+
+                var destinationFolder = Path.Combine(projectDirectory, assetsFolder, modelsFolder);
+                await ModelDownloadHandler.GetModel(assetLink.value, destinationFolder);
             }
         }
         catch (Exception e)
@@ -129,17 +150,27 @@ public class AssetImporterWindow : EditorWindow
         selectedAssetsList.Rebuild();
         selectedAssetsList.visible = false;
         importButton.visible = false;
+        importOptionsRadioGroup.SetEnabled(true);
     }
     private void OnRadiobuttonvalueChanges(int value)
     {
         if (value == 0)
         {
             selectAssetsButton.visible = true;
+            assetLink.visible = false;
+            importButton.visible = false;
         }
         else
         {
             selectAssetsButton.visible = false;
+            assetLink.visible = true;
+            importButton.visible = true;
         }
-
+    }
+    private bool IsValidURL(string URL)
+    {
+        string Pattern = @"^(?:http?:\/\/)?[\w.-]+(?:\.[\w\.-]+)+[\]+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+[=]+(?:\.[\w\.-])";
+        Regex Rgx = new Regex(Pattern, RegexOptions.Compiled | RegexOptions.IgnoreCase);
+        return Rgx.IsMatch(URL);
     }
 }
