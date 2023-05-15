@@ -34,21 +34,16 @@ public class ModelDownloadHandler
         }
     }
 
-    public static async Task GetModel(string url)
+    public static async Task GetModel(string url, string destinationPath)
     {
-        if (string.IsNullOrEmpty(projectDirectory))
-            projectDirectory = Directory.GetCurrentDirectory();
-        var modlesFolderPath = Path.Combine(projectDirectory, assetsFolder, modelsFolder);
-        if (!Directory.Exists(modlesFolderPath))
-            AssetDatabase.CreateFolder(assetsFolder, modelsFolder);
         try
         {
             using Stream streamToReadFrom = await client.GetStreamAsync(url);
-            string filename = "Model.fbx";
-            string  destinationFolder = Path.Combine(projectDirectory, assetsFolder, modelsFolder,filename);
-            using Stream streamToWriteTo = File.Open(destinationFolder, FileMode.Create);
+            string filename = "Modeltest.fbx";
+            string filePath = Path.Combine(destinationPath,filename);
+            using Stream streamToWriteTo = File.Open(filePath, FileMode.Create);
             await streamToReadFrom.CopyToAsync(streamToWriteTo);
-            AssetDatabase.Refresh(ImportAssetOptions.Default);
+            AssetDatabase.Refresh(ImportAssetOptions.ForceUpdate);
         }
         catch (HttpRequestException e)
         {
