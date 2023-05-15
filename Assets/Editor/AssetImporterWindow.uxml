@@ -3,5 +3,6 @@
     <ui:RadioButtonGroup label="Import options" value="-1" choices="UnityEngine.UIElements.RadioButtonGroup+&lt;get_choices&gt;d__7" name="ImportOptions" tabindex="0" />
     <ui:Button name="SelectAssetsFromDeskButton" text="Select assets from desk" tooltip="open explorer to select assets files" />
     <ui:ListView focusable="true" name="SelectedAssetsList" horizontal-scrolling="false" show-foldout-header="false" show-border="true" tooltip="List of selected assets to be imported" style="display: flex; margin-left: 5px; margin-right: 5px;" />
+    <ui:TextField picking-mode="Ignore" label="Asset Link" name="AssetLink" />
     <ui:Button name="ImportSelectedAssetsButton" tooltip="imports the asstes mentioned in the list" text="Import" style="display: flex;" />
 </ui:UXML>
