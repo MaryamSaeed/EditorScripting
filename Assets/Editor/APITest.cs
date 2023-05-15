@@ -36,7 +36,8 @@ internal sealed class APITest : EditorWindow
     public async void OnSendRequestButtonCLick()
     {
         EditorUtility.DisplayProgressBar("downloading model", "downloading model from server", 0);
-        await ModelDownloadHandler.GetModel(apiUrlTextField.text);
+        await ModelDownloadHandler.GetModel(apiUrlTextField.text, @"C:\Users\maryam.kamel\MITRealityHack\EditorScripting\Assets\Models");
+        ;
         EditorUtility.DisplayProgressBar("downloading model", "downloading model from server",1);
         EditorUtility.ClearProgressBar();
     }
