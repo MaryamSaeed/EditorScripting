@@ -42,6 +42,7 @@ public class AssetImporterWindow : EditorWindow
 
         // Instantiate UXML
         VisualElement visualtree = m_VisualTreeAsset.Instantiate();
+        FbxProcessor.processModel = false;
         windowRoot.Add(visualtree);
         InitWindowButtons();
         InitWindowList();
@@ -84,7 +85,7 @@ public class AssetImporterWindow : EditorWindow
     {
         assetLink = windowRoot.Query<TextField>("AssetLink");
         assetLink.visible = false;
-        assetLink.RegisterValueChangedCallback(evt => { Debug.Log(IsValidURL(evt.newValue)); });
+        assetLink.RegisterValueChangedCallback(evt => { Debug.Log(evt.newValue); });
     }
     private void InitializeFolders()
     {
@@ -167,10 +168,5 @@ public class AssetImporterWindow : EditorWindow
             importButton.visible = true;
         }
     }
-    private bool IsValidURL(string URL)
-    {
-        string Pattern = @"^(?:http?:\/\/)?[\w.-]+(?:\.[\w\.-]+)+[\]+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+[=]+(?:\.[\w\.-])";
-        Regex Rgx = new Regex(Pattern, RegexOptions.Compiled | RegexOptions.IgnoreCase);
-        return Rgx.IsMatch(URL);
-    }
+
 }
