@@ -1,12 +1,8 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using Microsoft.Extensions;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.IO;
 using UnityEditor;
-using System;
 
 public class ModelDownloadHandler
 {
