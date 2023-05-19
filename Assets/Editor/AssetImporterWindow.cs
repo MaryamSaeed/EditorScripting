@@ -65,7 +65,7 @@ public class AssetImporterWindow : EditorWindow
 
         importButton = windowRoot.Query<Button>("ImportSelectedAssetsButton");
         importButton.clicked += OnImportButtonClicked;
-        importButton.visible = false;
+        importButton.style.display = DisplayStyle.None;
     }
     private void InitWindowList()
     {
@@ -79,12 +79,12 @@ public class AssetImporterWindow : EditorWindow
         selectedAssetsList.bindItem = bindItem;
         selectedAssetsList.fixedItemHeight = 20;
         selectedAssetsList.style.flexGrow = 1;
-        selectedAssetsList.visible = false;
+        selectedAssetsList.style.display = DisplayStyle.None;
     }
     private void InitWindowTextField()
     {
         assetLink = windowRoot.Query<TextField>("AssetLink");
-        assetLink.visible = false;
+        assetLink.style.display = DisplayStyle.None;
         assetLink.RegisterValueChangedCallback(evt => { Debug.Log(evt.newValue); });
     }
     private void InitializeFolders()
@@ -110,8 +110,8 @@ public class AssetImporterWindow : EditorWindow
             fileList.AddRange(paths.ToList());
             selectedAssetsList.Rebuild();
             importOptionsRadioGroup.SetEnabled(false);
-            selectedAssetsList.visible = true;
-            importButton.visible = true;
+            selectedAssetsList.style.display = DisplayStyle.Flex;
+            importButton.style.display = DisplayStyle.Flex;
         }
     }
     private async void OnImportButtonClicked()
@@ -149,23 +149,23 @@ public class AssetImporterWindow : EditorWindow
 
         fileList.Clear();
         selectedAssetsList.Rebuild();
-        selectedAssetsList.visible = false;
-        importButton.visible = false;
+        selectedAssetsList.style.display = DisplayStyle.None;
+        importButton.style.display = DisplayStyle.None;
         importOptionsRadioGroup.SetEnabled(true);
     }
     private void OnRadiobuttonvalueChanges(int value)
     {
         if (value == 0)
         {
-            selectAssetsButton.visible = true;
-            assetLink.visible = false;
-            importButton.visible = false;
+            selectAssetsButton.style.display = DisplayStyle.Flex;
+            assetLink.style.display = DisplayStyle.None;
+            importButton.style.display = DisplayStyle.None;
         }
         else
         {
-            selectAssetsButton.visible = false;
-            assetLink.visible = true;
-            importButton.visible = true;
+            selectAssetsButton.style.display = DisplayStyle.None;
+            assetLink.style.display = DisplayStyle.Flex;
+            importButton.style.display = DisplayStyle.Flex;
         }
     }
 
