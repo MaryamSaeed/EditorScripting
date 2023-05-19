@@ -134,11 +134,11 @@ public class AssetImporterWindow : EditorWindow
             else
             {
                 Debug.Log("here we go");
-                if (!string.IsNullOrEmpty(assetLink.value))
-                    FbxProcessor.processModel = true;
 
                 var destinationFolder = Path.Combine(projectDirectory, assetsFolder, modelsFolder);
                 await ModelDownloadHandler.GetModel(assetLink.value, destinationFolder);
+                            FbxProcessor.processModel = true;
+                AssetDatabase.Refresh(ImportAssetOptions.Default);
             }
         }
         catch (Exception e)

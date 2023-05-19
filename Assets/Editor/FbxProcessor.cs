@@ -41,9 +41,9 @@ internal sealed class FbxProcessor : AssetPostprocessor
 
                     ExtractMaterialsFromAsset(asset, materialsPath);
                 }
+                processModel = false;
             }
         }
-        processModel = false;
     }
 
     private static void ExtractMaterialsFromAsset(string asset, string materialsPath)

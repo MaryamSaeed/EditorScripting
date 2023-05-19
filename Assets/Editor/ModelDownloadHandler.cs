@@ -39,7 +39,7 @@ public class ModelDownloadHandler
             string filePath = Path.Combine(destinationPath,filename);
             using Stream streamToWriteTo = File.Open(filePath, FileMode.Create);
             await streamToReadFrom.CopyToAsync(streamToWriteTo);
-            AssetDatabase.Refresh(ImportAssetOptions.ForceUpdate);
+            await Task.Delay(120000);
         }
         catch (HttpRequestException e)
         {
