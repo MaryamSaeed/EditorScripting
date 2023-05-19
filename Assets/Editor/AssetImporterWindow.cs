@@ -130,16 +130,26 @@ public class AssetImporterWindow : EditorWindow
                     File.Copy(path, destinationFolder, true);
                     AssetDatabase.Refresh(ImportAssetOptions.Default);
                 }
+
+                fileList.Clear();
+                selectedAssetsList.Rebuild();
+                selectedAssetsList.style.display = DisplayStyle.None;
             }
             else
             {
-                Debug.Log("here we go");
+                assetLink.SetEnabled(false);
 
                 var destinationFolder = Path.Combine(projectDirectory, assetsFolder, modelsFolder);
                 await ModelDownloadHandler.GetModel(assetLink.value, destinationFolder);
-                            FbxProcessor.processModel = true;
+                FbxProcessor.processModel = true;
                 AssetDatabase.Refresh(ImportAssetOptions.Default);
+
+                assetLink.value = string.Empty;
+                assetLink.SetEnabled(true);
+                assetLink.style.display = DisplayStyle.None;
             }
+
+            FbxProcessor.processModel = false;
         }
         catch (Exception e)
         {
@@ -147,11 +157,10 @@ public class AssetImporterWindow : EditorWindow
             Debug.LogError(e.Message);
         }
 
-        fileList.Clear();
-        selectedAssetsList.Rebuild();
-        selectedAssetsList.style.display = DisplayStyle.None;
         importButton.style.display = DisplayStyle.None;
         importOptionsRadioGroup.SetEnabled(true);
+        importOptionsRadioGroup.SetValueWithoutNotify(0);
+        selectAssetsButton.style.display = DisplayStyle.Flex;
     }
     private void OnRadiobuttonvalueChanges(int value)
     {
@@ -167,6 +176,12 @@ public class AssetImporterWindow : EditorWindow
             assetLink.style.display = DisplayStyle.Flex;
             importButton.style.display = DisplayStyle.Flex;
         }
+    }
+
+    private void OnDisable()
+    {
+        selectAssetsButton.clicked -= OnSelectAssetsButtonClicked;
+        importButton.clicked -= OnImportButtonClicked;
     }
 
 }
