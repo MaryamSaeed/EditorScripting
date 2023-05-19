@@ -30,7 +30,7 @@ internal sealed class FbxProcessor : AssetPostprocessor
                 {
                     var assetTextures = AssetImporter.GetAtPath(asset) as ModelImporter;
                     var success  = assetTextures.ExtractTextures(texturesPath);
-                    if (success )
+                    if (success)
                     {
                         Debug.Log("textures extracted successfully");
                     }
