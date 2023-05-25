@@ -18,6 +18,8 @@ public class AssetImporterWindow : EditorWindow
     private List<string> fileList;
     private RadioButtonGroup importOptionsRadioGroup;
     private TextField assetLink;
+    private VisualElement progressBarContainer;
+    private ProgressBar progressBar;
 
     private readonly string assetsFolder = "Assets";
     private readonly string modelsFolder = "Models";
@@ -48,7 +50,14 @@ public class AssetImporterWindow : EditorWindow
         InitWindowList();
         InitWindowTextField();
         InitRadioButtonGroup();
+        InitProgressBar();
         InitializeFolders();
+    }
+
+    private void OnDisable()
+    {
+        selectAssetsButton.clicked -= OnSelectAssetsButtonClicked;
+        importButton.clicked -= OnImportButtonClicked;
     }
 
     private void InitRadioButtonGroup()
@@ -101,19 +110,17 @@ public class AssetImporterWindow : EditorWindow
         if (!Directory.Exists(texturesFolderPath))
             AssetDatabase.CreateFolder(assetsFolder, texturesFolder);
     }
-    private void OnSelectAssetsButtonClicked()
+    private void InitProgressBar()
     {
-        var paths = StandaloneFileBrowser.OpenFilePanel("Open File","", "fbx", true);
-
-        if (paths.Length > 0)
-        {
-            fileList.AddRange(paths.ToList());
-            selectedAssetsList.Rebuild();
-            importOptionsRadioGroup.SetEnabled(false);
-            selectedAssetsList.style.display = DisplayStyle.Flex;
-            importButton.style.display = DisplayStyle.Flex;
-        }
+        progressBar = windowRoot.Query<ProgressBar>("DownloadProgressBar");
+        progressBar.title = "Downloading model";
+        progressBar.lowValue = 0;
+        progressBar.highValue = 100;
+        progressBar.value = 0;
+        progressBarContainer = progressBar.parent;
+        progressBarContainer.style.display = DisplayStyle.None;
     }
+
     private async void OnImportButtonClicked()
     {
         try
@@ -162,6 +169,20 @@ public class AssetImporterWindow : EditorWindow
         importOptionsRadioGroup.SetValueWithoutNotify(0);
         selectAssetsButton.style.display = DisplayStyle.Flex;
     }
+    private void OnSelectAssetsButtonClicked()
+    {
+        var paths = StandaloneFileBrowser.OpenFilePanel("Open File","", "fbx", true);
+
+        if (paths.Length > 0)
+        {
+            fileList.AddRange(paths.ToList());
+            selectedAssetsList.Rebuild();
+            importOptionsRadioGroup.SetEnabled(false);
+            selectedAssetsList.style.display = DisplayStyle.Flex;
+            importButton.style.display = DisplayStyle.Flex;
+        }
+    }
+
     private void OnRadiobuttonvalueChanges(int value)
     {
         if (value == 0)
@@ -177,11 +198,4 @@ public class AssetImporterWindow : EditorWindow
             importButton.style.display = DisplayStyle.Flex;
         }
     }
-
-    private void OnDisable()
-    {
-        selectAssetsButton.clicked -= OnSelectAssetsButtonClicked;
-        importButton.clicked -= OnImportButtonClicked;
-    }
-
 }

@@ -5,4 +5,7 @@
     <ui:ListView focusable="true" name="SelectedAssetsList" horizontal-scrolling="false" show-foldout-header="false" show-border="true" tooltip="List of selected assets to be imported" style="display: flex; margin-left: 5px; margin-right: 5px;" />
     <ui:TextField picking-mode="Ignore" label="Asset Link" name="AssetLink" />
     <ui:Button name="ImportSelectedAssetsButton" tooltip="imports the asstes mentioned in the list" text="Import" style="display: flex;" />
+    <ui:VisualElement name="ProgressBarContainer" style="flex-grow: 1; background-color: rgba(0, 0, 0, 0.59); position: absolute; height: 450px; width: 375px; -unity-background-image-tint-color: rgba(0, 0, 0, 0); -unity-background-scale-mode: scale-to-fit;">
+        <ui:ProgressBar value="22" title="my-progress" name="DownloadProgressBar" style="position: absolute; top: 182px; left: 21px; width: 324px; height: 32px;" />
+    </ui:VisualElement>
 </ui:UXML>
