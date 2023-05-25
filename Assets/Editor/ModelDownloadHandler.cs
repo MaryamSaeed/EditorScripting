@@ -10,7 +10,6 @@ public class ModelDownloadHandler
 
     private static string assetsFolder = "Assets";
     private static string modelsFolder = "Models";
-
     private static string projectDirectory;
 
     public static async Task GetApiResponse(string url)

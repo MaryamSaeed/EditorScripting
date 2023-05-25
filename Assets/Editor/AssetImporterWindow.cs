@@ -145,6 +145,7 @@ public class AssetImporterWindow : EditorWindow
             else
             {
                 assetLink.SetEnabled(false);
+                progressBarContainer.style.display = DisplayStyle.Flex;
 
                 var destinationFolder = Path.Combine(projectDirectory, assetsFolder, modelsFolder);
                 await ModelDownloadHandler.GetModel(assetLink.value, destinationFolder);
@@ -164,6 +165,7 @@ public class AssetImporterWindow : EditorWindow
             Debug.LogError(e.Message);
         }
 
+        progressBarContainer.style.display = DisplayStyle.None;
         importButton.style.display = DisplayStyle.None;
         importOptionsRadioGroup.SetEnabled(true);
         importOptionsRadioGroup.SetValueWithoutNotify(0);
