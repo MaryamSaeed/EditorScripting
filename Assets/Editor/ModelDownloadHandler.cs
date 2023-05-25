@@ -37,7 +37,7 @@ public class ModelDownloadHandler
             using Stream streamToReadFrom = await client.GetStreamAsync(url);
             string filename = "Modeltest.fbx";
             string filePath = Path.Combine(destinationPath,filename);
-            using Stream streamToWriteTo = File.Open(filePath, FileMode.Create);
+            using Stream streamToWriteTo = File.Open(filePath, FileMode.Create,FileAccess.ReadWrite,FileShare.ReadWrite);
             await streamToReadFrom.CopyToAsync(streamToWriteTo);
             await Task.Delay(120000);
         }
