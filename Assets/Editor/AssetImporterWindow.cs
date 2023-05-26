@@ -53,11 +53,11 @@ public class AssetImporterWindow : EditorWindow
         InitProgressBar();
         InitializeFolders();
     }
-
     private void OnDisable()
     {
         selectAssetsButton.clicked -= OnSelectAssetsButtonClicked;
         importButton.clicked -= OnImportButtonClicked;
+        ModelDownloadHandler.UpdateProgressBar -= OnUpdateProgress;
     }
 
     private void InitRadioButtonGroup()
@@ -119,6 +119,7 @@ public class AssetImporterWindow : EditorWindow
         progressBar.value = 0;
         progressBarContainer = progressBar.parent;
         progressBarContainer.style.display = DisplayStyle.None;
+        ModelDownloadHandler.UpdateProgressBar += OnUpdateProgress;
     }
 
     private async void OnImportButtonClicked()
@@ -148,7 +149,7 @@ public class AssetImporterWindow : EditorWindow
                 progressBarContainer.style.display = DisplayStyle.Flex;
 
                 var destinationFolder = Path.Combine(projectDirectory, assetsFolder, modelsFolder);
-                await ModelDownloadHandler.GetModel(assetLink.value, destinationFolder);
+                await ModelDownloadHandler.DownloadModel(assetLink.value, destinationFolder);
                 FbxProcessor.processModel = true;
                 AssetDatabase.Refresh(ImportAssetOptions.Default);
 
@@ -184,7 +185,10 @@ public class AssetImporterWindow : EditorWindow
             importButton.style.display = DisplayStyle.Flex;
         }
     }
-
+    private void OnUpdateProgress(float progress)
+    {
+        progressBar.value = Mathf.FloorToInt(progress);
+    }
     private void OnRadiobuttonvalueChanges(int value)
     {
         if (value == 0)
