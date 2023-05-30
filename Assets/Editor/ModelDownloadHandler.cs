@@ -52,17 +52,11 @@ public class ModelDownloadHandler
     {
         try
         {
-            string filename = "Modeltest.fbx";
-            string filePath = Path.Combine(destinationPath,filename);
-
-            // Setup your progress reporter
             var progress = new Progress<float> ();
             progress.ProgressChanged += OnProgressChanged;
 
-            // Use the provided extension method
-            using (var file = new FileStream(filePath, FileMode.Create, FileAccess.Write, FileShare.None))
-                await client.DownloadDataAsync(url, file, progress);
-            await Task.Delay(120000);
+            await client.DownloadDataAsync(url, destinationPath, progress);
+            await Task.Delay(5000);
         }
         catch (HttpRequestException e)
         {
