@@ -8,20 +8,26 @@ using System;
 public class ModelDownloadHandler
 {
     public static Action<float> UpdateProgressBar;
-    static readonly HttpClient client = new HttpClient();
+
+    private static HttpClient client = new HttpClient();
+    private static Progress<float>  progress = new Progress<float>();
+
     private static string assetsFolder = "Assets";
     private static string modelsFolder = "Models";
     private static string projectDirectory;
 
-    public static async Task GetApiResponse(string url)
+    /// <summary>
+    /// Gets an API response to the API request given 
+    /// </summary>
+    /// <param name="api">API url</param>
+    public static async Task GetApiResponse(string api)
     {
         try
         {
-            using HttpResponseMessage response = await client.GetAsync(url);
+            using HttpResponseMessage response = await client.GetAsync(api);
             response.EnsureSuccessStatusCode();
             string responsebody = await response.Content.ReadAsStringAsync();
             Debug.Log(responsebody);
-            //byte[] responsebody = await response.Content.ReadAsByteArrayAsync();
         }
         catch (HttpRequestException e)
         {
@@ -30,6 +36,11 @@ public class ModelDownloadHandler
         }
     }
 
+    /// <summary>
+    /// Downloads a model from url into destination path (this approach is not recommended)
+    /// </summary>
+    /// <param name="url">The model URL on server</param>
+    /// <param name="destinationPath">The path to which the model is downloaded</param>
     public static async Task GetModel(string url, string destinationPath)
     {
         try
@@ -39,7 +50,7 @@ public class ModelDownloadHandler
             string filePath = Path.Combine(destinationPath,filename);
             using Stream streamToWriteTo = File.Open(filePath, FileMode.Create,FileAccess.ReadWrite,FileShare.ReadWrite);
             await streamToReadFrom.CopyToAsync(streamToWriteTo);
-            await Task.Delay(120000);
+            await Task.Delay(5000);
         }
         catch (HttpRequestException e)
         {
@@ -48,11 +59,15 @@ public class ModelDownloadHandler
         }
     }
 
+    /// <summary>
+    /// Downloads the model from a url to the destination folder (best approach)
+    /// </summary>
+    /// <param name="url">Url to model on server</param>
+    /// <param name="destinationPath">The download pth</param>
     public static async Task DownloadModel(string url, string destinationPath)
     {
         try
         {
-            var progress = new Progress<float> ();
             progress.ProgressChanged += OnProgressChanged;
 
             await client.DownloadDataAsync(url, destinationPath, progress);
@@ -63,12 +78,15 @@ public class ModelDownloadHandler
             Debug.Log("\nException Caught!");
             Debug.Log("Message :{0} " + e.Message);
         }
+        progress.ProgressChanged -= OnProgressChanged;
     }
 
+    /// <summary>
+    /// Download Progress reporting, invokes an event to notify subscribers about the download progress
+    /// </summary>
+    /// <param name="progress">progress value</param>
     private static void OnProgressChanged(object sender, float progress)
     {
-        // Do something with your progress
-        Debug.Log(progress);
         UpdateProgressBar?.Invoke(progress);
     }
 }
