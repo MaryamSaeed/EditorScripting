@@ -3,8 +3,10 @@ using System.IO;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using UnityEngine;
 
+/// <summary>
+/// HttpClient extension to include progress reporting in the download routine 
+/// </summary>
 namespace HttpClientProgress
 {
     public static class HttpClientProgressExtensions

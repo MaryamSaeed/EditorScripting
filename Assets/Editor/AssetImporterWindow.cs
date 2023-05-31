@@ -11,6 +11,7 @@ public class AssetImporterWindow : EditorWindow
 {
     [SerializeField]
     private VisualTreeAsset m_VisualTreeAsset = default;
+
     private VisualElement windowRoot;
     private Button selectAssetsButton;
     private ListView selectedAssetsList;
@@ -21,6 +22,7 @@ public class AssetImporterWindow : EditorWindow
     private VisualElement progressBarContainer;
     private ProgressBar progressBar;
 
+    //files names
     private readonly string assetsFolder = "Assets";
     private readonly string modelsFolder = "Models";
     private readonly string materialsFolder = "Materials";
@@ -31,12 +33,13 @@ public class AssetImporterWindow : EditorWindow
     private string texturesFolderPath;
 
     [MenuItem("Tools/AssetImporterWindow")]
-    public static void ShowExample()
+    public static void ShowWindow()
     {
         AssetImporterWindow wnd = GetWindow<AssetImporterWindow>();
         wnd.titleContent = new GUIContent("AssetImporterWindow");
     }
 
+    //window life cycle
     public void CreateGUI()
     {
         // Each editor window contains a root VisualElement object
@@ -60,6 +63,7 @@ public class AssetImporterWindow : EditorWindow
         ModelDownloadHandler.UpdateProgressBar -= OnUpdateProgress;
     }
 
+    //UI initialize
     private void InitRadioButtonGroup()
     {
         importOptionsRadioGroup = windowRoot.Query<RadioButtonGroup>("ImportOptions");
@@ -94,7 +98,6 @@ public class AssetImporterWindow : EditorWindow
     {
         assetLink = windowRoot.Query<TextField>("AssetLink");
         assetLink.style.display = DisplayStyle.None;
-        assetLink.RegisterValueChangedCallback(evt => { Debug.Log(evt.newValue); });
     }
     private void InitializeFolders()
     {
@@ -122,26 +125,32 @@ public class AssetImporterWindow : EditorWindow
         ModelDownloadHandler.UpdateProgressBar += OnUpdateProgress;
     }
 
+    /// <summary>
+    /// copy & imports the selected .fbx Models to the project
+    /// </summary>
+    private void ImportFilesFromDesk()
+    {
+        if (fileList.Count > 0)
+            FbxProcessor.processModel = true;
+
+        foreach (var path in fileList)
+        {
+            var filename = Path.GetFileName(path);
+            var destinationFolder = Path.Combine(projectDirectory, assetsFolder, modelsFolder,filename);
+            File.Copy(path, destinationFolder, true);
+            AssetDatabase.Refresh(ImportAssetOptions.Default);
+        }
+    }
     private async void OnImportButtonClicked()
     {
+        importButton.SetEnabled(false);
+
         try
         {
             if (importOptionsRadioGroup.value == 0)
             {
-                if (fileList.Count > 0)
-                    FbxProcessor.processModel = true;
-
-                foreach (var path in fileList)
-                {
-                    var filename = Path.GetFileName(path);
-                    var destinationFolder = Path.Combine(projectDirectory, assetsFolder, modelsFolder,filename);
-                    File.Copy(path, destinationFolder, true);
-                    AssetDatabase.Refresh(ImportAssetOptions.Default);
-                }
-
-                fileList.Clear();
-                selectedAssetsList.Rebuild();
-                selectedAssetsList.style.display = DisplayStyle.None;
+                ImportFilesFromDesk();
+                ResetSelectedAssetsList();
             }
             else
             {
@@ -152,10 +161,7 @@ public class AssetImporterWindow : EditorWindow
                 await ModelDownloadHandler.DownloadModel(assetLink.value, destinationFolder);
                 FbxProcessor.processModel = true;
                 AssetDatabase.Refresh(ImportAssetOptions.Default);
-
-                assetLink.value = string.Empty;
-                assetLink.SetEnabled(true);
-                assetLink.style.display = DisplayStyle.None;
+                ResetAssetLink();
             }
 
             FbxProcessor.processModel = false;
@@ -164,14 +170,55 @@ public class AssetImporterWindow : EditorWindow
         {
             Debug.LogError("Faild to import model");
             Debug.LogError(e.Message);
+
+            ResetWindowUI();
+            FbxProcessor.processModel = false;
         }
 
-        progressBarContainer.style.display = DisplayStyle.None;
-        importButton.style.display = DisplayStyle.None;
-        importOptionsRadioGroup.SetEnabled(true);
-        importOptionsRadioGroup.SetValueWithoutNotify(0);
+        ResetPogressBar();
+        ResetImportButton();
+        ResetRadioButtonGroup();
         selectAssetsButton.style.display = DisplayStyle.Flex;
     }
+
+    //UI reset
+    private void ResetWindowUI()
+    {
+        ResetAssetLink();
+        ResetRadioButtonGroup();
+        ResetImportButton();
+        ResetPogressBar();
+        ResetSelectedAssetsList();
+    }
+    private void ResetAssetLink()
+    {
+        assetLink.value = string.Empty;
+        assetLink.SetEnabled(true);
+        assetLink.style.display = DisplayStyle.None;
+    }
+    private void ResetRadioButtonGroup()
+    {
+        importOptionsRadioGroup.SetEnabled(true);
+        importOptionsRadioGroup.SetValueWithoutNotify(0);
+    }
+    private void ResetImportButton()
+    {
+        importButton.SetEnabled(true);
+        importButton.style.display = DisplayStyle.None;
+    }
+    private void ResetPogressBar()
+    {
+        progressBar.value = 0;
+        progressBarContainer.style.display = DisplayStyle.None;
+    }
+    private void ResetSelectedAssetsList()
+    {
+        fileList.Clear();
+        selectedAssetsList.Rebuild();
+        selectedAssetsList.style.display = DisplayStyle.None;
+    }
+    
+    //UI events handlers
     private void OnSelectAssetsButtonClicked()
     {
         var paths = StandaloneFileBrowser.OpenFilePanel("Open File","", "fbx", true);

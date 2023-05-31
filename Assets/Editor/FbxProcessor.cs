@@ -1,24 +1,34 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.IO;
 using UnityEditor;
 using UnityEngine;
 
+/// <summary>
+/// This class extracts the materials and textures embedded in an fbx model
+/// this can only be done after the import process finishes, that's why its done in the postprocess
+/// </summary>
 internal sealed class FbxProcessor : AssetPostprocessor
 {
     public static bool processModel = false;
 
+    //destination files names
     private static readonly string assetsFolder = "Assets";
     private static readonly string materialsFolder = "Materials";
     private static readonly string texturesFolder = "Textures";
 
+    /// <summary>
+    /// extract all materials on post process 
+    /// cause this means the file is already imported unity and be processed
+    /// </summary>
+    /// <param name="importedAssets">List of recently imported assets</param>
     private static void OnPostprocessAllAssets(string[] importedAssets,
                                                string[] deletedAssets,
                                                string[] movedAssets,
                                                string[] movedFromAssetPaths,
                                                bool didDomainReload)
     {
+        //note: in order for fbx processor to process the recently imported models
+        //make sure your script sets processModel to true
         if (processModel)
         {
             if (importedAssets.Length > 0)
@@ -46,6 +56,11 @@ internal sealed class FbxProcessor : AssetPostprocessor
         }
     }
 
+    /// <summary>
+    /// Extracts the material embedded in the mported model
+    /// </summary>
+    /// <param name="asset">the path to this asset in the assets folder</param>
+    /// <param name="materialsPath">the destination path to which we extracts the materials</param>
     private static void ExtractMaterialsFromAsset(string asset, string materialsPath)
     {
         var subAssets = AssetDatabase.LoadAllAssetsAtPath(asset);
@@ -58,6 +73,7 @@ internal sealed class FbxProcessor : AssetPostprocessor
 
             if (string.IsNullOrEmpty(error))
             {
+                //rewrite import settings and re import the asset
                 AssetDatabase.WriteImportSettingsIfDirty(asset);
                 AssetDatabase.ImportAsset(asset, ImportAssetOptions.ForceUpdate);
             }
@@ -67,5 +83,4 @@ internal sealed class FbxProcessor : AssetPostprocessor
             }
         }
     }
-
 }
