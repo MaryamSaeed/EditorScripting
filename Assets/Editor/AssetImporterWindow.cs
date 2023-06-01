@@ -47,6 +47,7 @@ public class AssetImporterWindow : EditorWindow
 
         // Instantiate UXML
         VisualElement visualtree = m_VisualTreeAsset.Instantiate();
+        visualtree.style.flexGrow = 1;
         FbxProcessor.processModel = false;
         windowRoot.Add(visualtree);
         InitWindowButtons();
